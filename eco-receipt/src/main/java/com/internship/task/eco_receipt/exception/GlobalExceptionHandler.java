@@ -20,12 +20,12 @@ public class GlobalExceptionHandler {
 				.map(error -> error.getField() + ": " + error.getDefaultMessage())
 				.toList();
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-				.body(new ApiError(400, "Nieprawidłowe dane", details));
+				.body(new ApiError(400, "Invalid data", details));
 	}
 
 	@ExceptionHandler({ConflictException.class, DataIntegrityViolationException.class})
 	public ResponseEntity<ApiError> handleConflict(Exception ex) {
-		String message = ex instanceof ConflictException ? ex.getMessage() : "Dane naruszają ograniczenia unikalności";
+		String message = ex instanceof ConflictException ? ex.getMessage() : "Data violates a uniqueness constraint";
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiError.of(409, message));
 	}
 
@@ -42,6 +42,6 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(AuthenticationException.class)
 	public ResponseEntity<ApiError> handleAuthentication(AuthenticationException ex) {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-				.body(ApiError.of(401, "Nieprawidłowa nazwa użytkownika lub hasło"));
+				.body(ApiError.of(401, "Invalid username or password"));
 	}
 }

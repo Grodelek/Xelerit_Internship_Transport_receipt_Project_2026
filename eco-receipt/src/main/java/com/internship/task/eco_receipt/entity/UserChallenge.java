@@ -3,6 +3,9 @@ package com.internship.task.eco_receipt.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -11,6 +14,8 @@ import java.time.LocalDate;
 @Table(name = "user_challenges", uniqueConstraints = {
 		@UniqueConstraint(name = "uk_user_challenge_date", columnNames = {"user_id", "challengeDate"})
 })
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserChallenge {
 
 	@Id
@@ -40,40 +45,9 @@ public class UserChallenge {
 
 	private Instant completedAt;
 
-	protected UserChallenge() {
-	}
-
 	public UserChallenge(User user, Challenge challenge, LocalDate challengeDate) {
 		this.user = user;
 		this.challenge = challenge;
 		this.challengeDate = challengeDate;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public Challenge getChallenge() {
-		return challenge;
-	}
-
-	public LocalDate getChallengeDate() {
-		return challengeDate;
-	}
-
-	public int getProgress() {
-		return progress;
-	}
-
-	public boolean isCompleted() {
-		return completed;
-	}
-
-	public Instant getCompletedAt() {
-		return completedAt;
 	}
 }

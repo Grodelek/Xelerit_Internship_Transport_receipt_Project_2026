@@ -2,6 +2,9 @@ package com.internship.task.eco_receipt.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
@@ -9,6 +12,8 @@ import java.time.Instant;
 @Table(name = "user_badges", uniqueConstraints = {
 		@UniqueConstraint(name = "uk_user_badge", columnNames = {"user_id", "badge_id"})
 })
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserBadge {
 
 	@Id
@@ -28,9 +33,6 @@ public class UserBadge {
 	@Column(nullable = false, updatable = false)
 	private Instant unlockedAt;
 
-	protected UserBadge() {
-	}
-
 	public UserBadge(User user, Badge badge) {
 		this.user = user;
 		this.badge = badge;
@@ -39,21 +41,5 @@ public class UserBadge {
 	@PrePersist
 	void onCreate() {
 		this.unlockedAt = Instant.now();
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public Badge getBadge() {
-		return badge;
-	}
-
-	public Instant getUnlockedAt() {
-		return unlockedAt;
 	}
 }

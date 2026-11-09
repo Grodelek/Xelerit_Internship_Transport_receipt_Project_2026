@@ -19,19 +19,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
 	private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
 	private final UserService userService;
 	private final AuthService authService;
-
-	public AuthController(UserService userService, AuthService authService) {
-		this.userService = userService;
-		this.authService = authService;
-	}
 
 	@PostMapping("/register")
 	@ResponseStatus(HttpStatus.CREATED)

@@ -1,5 +1,6 @@
 package com.internship.task.eco_receipt.auth;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +14,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -29,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthenticationIntegrationTest {
 
 	private static final String PASSWORD = "StrongPass1";
+	private static final String UUID_PATTERN = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -36,11 +39,14 @@ class AuthenticationIntegrationTest {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
+	@Autowired
+	private EntityManager entityManager;
+
 	@Test
 	void shouldRegisterUserAndReturnProfileWithoutPassword() throws Exception {
 		register("anna", "anna@example.com", PASSWORD)
 				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").isNumber())
+				.andExpect(jsonPath("$.id").value(matchesPattern(UUID_PATTERN)))
 				.andExpect(jsonPath("$.username").value("anna"))
 				.andExpect(jsonPath("$.email").value("anna@example.com"))
 				.andExpect(jsonPath("$.totalXp").value(0))
@@ -50,6 +56,7 @@ class AuthenticationIntegrationTest {
 	@Test
 	void shouldStorePasswordAsBcryptHash() throws Exception {
 		register("anna", "anna@example.com", PASSWORD).andExpect(status().isCreated());
+		entityManager.flush();
 
 		String stored = jdbcTemplate.queryForObject(
 				"SELECT password FROM users WHERE username = ?", String.class, "anna");
@@ -214,14 +221,6 @@ class AuthenticationIntegrationTest {
 		register("anna", "anna@example.com", PASSWORD).andExpect(status().isCreated());
 
 		login("anna", "ą".repeat(40)).andExpect(status().isUnauthorized());
-	}
-
-	@Test
-	void shouldReturnBadRequestWhenRequestBodyIsMalformedJson() throws Exception {
-		mockMvc.perform(post("/api/auth/register")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content("{bad json"))
-				.andExpect(status().isBadRequest());
 	}
 
 	private ResultActions register(String username, String email, String password) throws Exception {

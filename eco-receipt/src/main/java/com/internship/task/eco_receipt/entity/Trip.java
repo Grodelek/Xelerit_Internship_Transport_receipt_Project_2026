@@ -5,6 +5,9 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -13,6 +16,8 @@ import java.time.Instant;
 @Table(name = "trips", indexes = {
 		@Index(name = "idx_trips_user_completed", columnList = "user_id, completedAt")
 })
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Trip {
 
 	@Id
@@ -64,9 +69,6 @@ public class Trip {
 	@Column(nullable = false)
 	private Instant completedAt;
 
-	protected Trip() {
-	}
-
 	public Trip(User user, String startLocation, String destination, TransportType transportType,
 				BigDecimal distanceKm, int durationMinutes, BigDecimal estimatedCost,
 				BigDecimal co2Emission, BigDecimal co2Saved) {
@@ -86,49 +88,5 @@ public class Trip {
 		if (completedAt == null) {
 			completedAt = Instant.now();
 		}
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public String getStartLocation() {
-		return startLocation;
-	}
-
-	public String getDestination() {
-		return destination;
-	}
-
-	public TransportType getTransportType() {
-		return transportType;
-	}
-
-	public BigDecimal getDistanceKm() {
-		return distanceKm;
-	}
-
-	public int getDurationMinutes() {
-		return durationMinutes;
-	}
-
-	public BigDecimal getEstimatedCost() {
-		return estimatedCost;
-	}
-
-	public BigDecimal getCo2Emission() {
-		return co2Emission;
-	}
-
-	public BigDecimal getCo2Saved() {
-		return co2Saved;
-	}
-
-	public Instant getCompletedAt() {
-		return completedAt;
 	}
 }
